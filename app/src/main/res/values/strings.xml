@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">oman tourism guide</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="send_to">send to</string>
+    <string name="title_activity_placeinformation">placeinformation</string>
+    <string name="title_activity_places_list">placesList</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_placeslist">places</string>
+    <string name="homeplaceslist">places</string>
+    <string name="homeqr">scan QR</string>
+    <string name="homeshareareas" >share areas</string>
+    <string name="homeservice">service</string>
+</resources>

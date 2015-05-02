@@ -1,0 +1,302 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+    tools:context="graduationsurcas.com.graduationapp.activites.Home">
+
+    <include
+        android:id="@+id/homeactivitytoolbar"
+        layout="@layout/toolbar" />
+
+    <ScrollView
+android:background="@color/rootlayoutColor"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/homeheader"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+
+                <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="20dp"-->
+                <!--android:text="New Text"-->
+                <!--android:textColor="@android:color/white"-->
+                <!--android:id="@+id/textView"-->
+                <!--android:layout_centerHorizontal="true" />-->
+
+
+                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/card_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="4dp">
+
+                    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ImageView
+                            android:id="@+id/card_thumbnail_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/exampleimage" />
+
+                        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:tools="http://schemas.android.com/tools"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+
+                            <TextView
+                                android:id="@+id/temperaturedegree"
+                                style="@style/Temperature"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="41dp"
+                                android:text="00"
+                                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                            <TextView
+                                android:id="@+id/cityname"
+                                style="@style/City"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/temperaturedegree"
+                                android:layout_centerHorizontal="true"
+                                android:text="city" />
+
+                            <TextView
+                                android:id="@+id/humiditydegree"
+                                style="@style/Humidity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/temperaturedegree"
+                                android:layout_toRightOf="@+id/temperaturedegree"
+                                android:text="00%"
+                                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                        </RelativeLayout>
+                    </FrameLayout>
+
+                </android.support.v7.widget.CardView>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/homeplacecard"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="100dp"
+                        android:onClick="openplaceslist"
+                        android:layout_margin="4dp">
+
+                        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:tools="http://schemas.android.com/tools"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+
+                            <TextView
+                                style="@style/HomeCardsTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/homeplaceslist"
+                                android:id="@+id/homeplace"
+                                android:layout_alignParentBottom="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="31dp" />
+
+                            <ImageView
+
+                                style="@style/HomeCardsIcon"
+                                android:src="@drawable/placeslist"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/imageView"
+                                android:layout_above="@+id/homeplace"
+                                android:layout_centerHorizontal="true" />
+                        </RelativeLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/card_view3"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="100dp"
+                    android:layout_margin="4dp">
+                </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/homeshareareascard"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="100dp"
+                        android:layout_margin="4dp">
+
+                        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:tools="http://schemas.android.com/tools"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+
+                            <TextView
+                                style="@style/HomeCardsTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/homeshareareas"
+                                android:id="@+id/homeshareareascardlabel"
+                                android:layout_alignParentBottom="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="31dp" />
+
+                            <ImageView
+
+                                style="@style/HomeCardsIcon"
+                                android:src="@drawable/sharearea"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/homeshareareascardicon"
+                                android:layout_above="@+id/homeshareareascardlabel"
+                                android:layout_centerHorizontal="true" />
+                        </RelativeLayout>
+
+
+                    </android.support.v7.widget.CardView>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/homeqrcard"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="100dp"
+                        android:layout_margin="4dp">
+
+                        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:tools="http://schemas.android.com/tools"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+
+                            <TextView
+                                style="@style/HomeCardsTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/homeqr"
+                                android:id="@+id/homeqrlabel"
+                                android:layout_alignParentBottom="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="31dp" />
+
+                            <ImageView
+
+                                style="@style/HomeCardsIcon"
+                                android:src="@drawable/qr"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/homeqrcardicon"
+                                android:layout_above="@+id/homeqrlabel"
+                                android:layout_centerHorizontal="true" />
+                        </RelativeLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/homeservicecard"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="100dp"
+                    android:layout_margin="4dp">
+
+                        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:tools="http://schemas.android.com/tools"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+
+                            <TextView
+                                style="@style/HomeCardsTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/homeservice"
+                                android:id="@+id/homeservicelabel"
+                                android:layout_alignParentBottom="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="31dp" />
+
+                            <ImageView
+
+                                style="@style/HomeCardsIcon"
+                                android:src="@drawable/service"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/homeserviceicon"
+                                android:layout_above="@+id/homeservicelabel"
+                                android:layout_centerHorizontal="true" />
+                        </RelativeLayout>
+
+
+                    </android.support.v7.widget.CardView>
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <!-- -->
+
+
+    <!--<Button-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="place list"-->
+    <!--android:onClick="openplacelist"/>-->
+
+
+</LinearLayout>
