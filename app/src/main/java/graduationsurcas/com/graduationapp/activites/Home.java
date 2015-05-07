@@ -2,6 +2,9 @@ package graduationsurcas.com.graduationapp.activites;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -10,8 +13,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -33,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,6 +54,7 @@ import javax.xml.xpath.XPathFactory;
 import extra.GPStracker;
 import extra.WeatherAPIkeys;
 import extra.WeatherAPIkeys.*;
+import extra.sharedPreferencesKey;
 import graduationsurcas.com.graduationapp.R;
 
 public class Home extends ActionBarActivity {
@@ -53,6 +63,8 @@ public class Home extends ActionBarActivity {
     double locationlat = 0.0;
 
     private Context context = this;
+    private SharedPreferences sharedpreferences;
+    private SharedPreferences.Editor sharedpreferenceseditor;
 
     private Toolbar toolbar;
     private TextView temperaturedegree;
@@ -64,19 +76,48 @@ public class Home extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        SharedPreferencesSetUp();
+
         toolbar = (Toolbar) findViewById(R.id.homeactivitytoolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setLogo(R.drawable.toolbarappicon);
+        toolbar.getBackground().setAlpha(0);
+
 
         temperaturedegree = (TextView) findViewById(R.id.temperaturedegree);
         humiditydegree = (TextView) findViewById(R.id.humiditydegree);
         cityname = (TextView) findViewById(R.id.cityname);
 
-        //get user location
-        getLocation();
+
+        //if the app run at the first time
+        //select user location
+        if(sharedpreferences.getBoolean(
+                sharedPreferencesKey.PREFERENCES_LOCATION_ASKED, true) ||
+                System.currentTimeMillis() <=
+                        (sharedpreferences.getLong(
+                                sharedPreferencesKey.PREFERENCES_LOCATION_LAST_UBDATE_TIME,
+                                System.currentTimeMillis()) + sharedpreferences.getLong(
+                                sharedPreferencesKey.PREFERENCES_LOCATION_UBDATE_PERIOD_TIME,
+                                3600000))
+                ){
+            //3600000 <-- 1H in milliseconds
+            sharedpreferenceseditor.putBoolean(sharedPreferencesKey.PREFERENCES_LOCATION_ASKED,
+                    false);
+            sharedpreferenceseditor.commit();
+            //get user location
+            getLocation();
+        }
+
+        Log.d("timedate", String.valueOf(System.currentTimeMillis()));
+
 
         //get weather
-        Weather weather = new Weather(String.valueOf(locationlat), String.valueOf(locationlong));
+        Weather weather = new Weather(String.valueOf(locationlat),
+                String.valueOf(locationlong));
         weather.execute();
+
+//        new DownloadImageTask().execute("oman+sur");
 
 
 //        String tempr = weather.findDetail(WeatherAPIkeys.WETHER_TEMPERATURE);
@@ -85,9 +126,17 @@ public class Home extends ActionBarActivity {
 
     }
 
+    public void SharedPreferencesSetUp(){
+        sharedpreferences = getSharedPreferences(sharedPreferencesKey.PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
+        sharedpreferenceseditor = sharedpreferences.edit();
+    }
+
 
     public void openplaceslist(View view){
         startActivity(new Intent(context, MainActivity.class));
+    }
+    public void openitemslist(View view){
+        startActivity(new Intent(context, items_list.class));
     }
 
 
@@ -167,7 +216,6 @@ public class Home extends ActionBarActivity {
                     +getLang()
                     +".xml";
 
-            Log.d("weather api", apiUrl);
 
             HttpGet httpGet = new HttpGet(apiUrl);
 
@@ -273,6 +321,138 @@ public class Home extends ActionBarActivity {
 
     }
 
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+        String qResult = "";
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        public DownloadImageTask() {
+        }
+
+        protected Bitmap doInBackground(String... cityname) {
+
+
+
+            String apiUrl = getFlickerSearchLink("oman");
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpContext localContext = new BasicHttpContext();
+
+
+            HttpGet httpGet = new HttpGet(apiUrl);
+
+            try {
+                HttpResponse response = httpClient.execute(httpGet, localContext);
+                HttpEntity entity = response.getEntity();
+
+                if (entity != null) {
+                    InputStream inputStream = entity.getContent();
+                    Reader in = new InputStreamReader(inputStream);
+                    BufferedReader bufferedreader = new BufferedReader(in);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String stringReadLine = null;
+                    while ((stringReadLine = bufferedreader.readLine()) != null) {
+                        stringBuilder.append(stringReadLine + "\n");
+                        Log.d("photos", stringReadLine);
+                    }
+                    qResult = stringBuilder.toString();
+
+                }
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+
+//            String urldisplay = cityname[0];
+//            Bitmap mIcon11 = null;
+//            try {
+//                InputStream in = new java.net.URL(urldisplay).openStream();
+//                mIcon11 = BitmapFactory.decodeStream(in);
+//            } catch (Exception e) {
+//                Log.e("Error", e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return mIcon11;
+            return null;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+//            bmImage.setImageBitmap(result);
+        }
+
+        public String getFlickerSearchLink(String tag){
+//            sur+oman
+            return ("https://api.flickr.com/services/rest/?" +
+                    "method=flickr.photos.search" +
+                    "&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3" +
+                    "&tags=uae"+
+                    "&text=uae"+
+                    "&privacy_filter=1" +
+                    "&safe_search=1&per_page=1" +
+                    "&page=1" +
+                    "&format=rest" +
+                    "&auth_token=72157651857612357-5514d76cc9433844" +
+                    "&api_sig=8b741b7d93ce063937ee99a5ba2b0b9c");
+        }
+
+
+    }
+
+    public void QRReader(View view){
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setCaptureLayout(R.layout.custom_capture_layout);
+        integrator.initiateScan();
+
+    }
+
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        try{
+            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+            if (scanResult != null ) {
+                if(scanResult.getFormatName().trim().equalsIgnoreCase("QR_CODE")){
+                    if(scanResult.getContents() != null){
+
+                    String[] data = scanResult.getContents().split("~");
+                    if(data[0].trim().equalsIgnoreCase("omantourismguide")){
+                        //"omantourismguide~place~itemid~itemname"
+                        if(data[1].trim().equalsIgnoreCase("place")){
+                            try{
+                                Intent placeinfo = new Intent(context, placeinformation.class);
+                                placeinfo.putExtra("placeid", data[2]);
+                                placeinfo.putExtra("placename", data[3].replaceAll("%20", " "));
+                                startActivity(placeinfo);
+                            }catch (Exception e){
+
+                            }
+                        }
+//                        String destenation = data[1];
+//                        String itemid = data[2];
+//                        String itemname = data[3];
+//                        Log.d("QR item", "destenation = "+destenation);
+//                        Log.d("QR item", "id = "+itemid);
+//                        Log.d("QR item", "name = "+itemname);
+                    }
+                    }else{
+
+                    }
+                }
+//            Log.d("QR type", scanResult.getFormatName());
+            }
+        }
+        catch (Exception e){}
+
+//        && scanResult.getContents() != null
+    }
 
 
 }

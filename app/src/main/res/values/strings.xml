@@ -13,4 +13,16 @@
     <string name="homeqr">scan QR</string>
     <string name="homeshareareas" >share areas</string>
     <string name="homeservice">service</string>
+    <string name="homeitems">items</string>
+    <string name="load">loading ...</string>
+    <string name="closeqr">close</string>
+    <string name="title_activity_items_list">items</string>
+    <string name="orderlistby">order list by</string>
+
+    <string-array name="orderlistby_array">
+        <item>date</item>
+        <item>location</item>
+        <item>type</item>
+        <item>must likes</item>
+    </string-array>
 </resources>

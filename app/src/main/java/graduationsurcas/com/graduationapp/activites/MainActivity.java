@@ -3,6 +3,7 @@ package graduationsurcas.com.graduationapp.activites;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,40 +19,62 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import extra.activityUrlLink;
+import extra.URLHeaderKeys;
+import extra.sharedPreferencesKey;
 import graduationsurcas.com.graduationapp.R;
 
 public class MainActivity extends ActionBarActivity {
 
     private Context context = this;
+    private SharedPreferences sharedpreferences;
+    private SharedPreferences.Editor sharedpreferenceseditor;
+
     private WebView mainwebview;
     private Toolbar toolbar;
-    private ProgressBar progressbar;
     private SwipeRefreshLayout swipeLayout;
+    private LinearLayout progressbar;
 
+    boolean loadingFinished = true;
+    boolean redirect = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SharedPreferencesSetUp();
+
         toolbar = (Toolbar) findViewById(R.id.maintoolbar);
         setSupportActionBar(toolbar);
-
+        toolbar.setBackgroundColor(getResources().getColor(R.color.primary));
         initializeSwipeLayout();
 
-//        progressbar = (ProgressBar) findViewById(R.id.mainactivityprogress);
+        progressbar =  (LinearLayout)findViewById(R.id.mainprogresslayout);
 
         mainwebview = (WebView) findViewById(R.id.mainactivitywebview);
+        mainwebview.setVisibility(View.INVISIBLE);
         mainwebview.getSettings().setJavaScriptEnabled(true);
         mainwebview.setWebViewClient(new MainActivityWebViewClient());
         mainwebview.setWebChromeClient(new MainActivityWebChromeClient());
-        mainwebview.loadUrl(activityUrlLink.PLACE_URL);
 
+        mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(
+                sharedpreferences.getString(
+                        sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
+                        URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE))
+        );
 
+    }
+
+    public void SharedPreferencesSetUp(){
+        sharedpreferences = getSharedPreferences(sharedPreferencesKey.PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
+        sharedpreferenceseditor = sharedpreferences.edit();
     }
 
     private class MainActivityWebChromeClient extends WebChromeClient {
@@ -101,10 +124,30 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
 //        noinspection SimplifiableIfStatement
-//        if (id == R.id.action_openplacelist) {
-//
-//            return true;
-//        }
+        if (id == R.id.action_order_list) {
+
+            new MaterialDialog.Builder(this)
+                    .title(R.string.orderlistby)
+                    .items(R.array.orderlistby_array)
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            sharedpreferenceseditor.putString(
+                                    sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
+                                    text.toString().trim());
+                            sharedpreferenceseditor.commit();
+                            mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(
+                                    sharedpreferences.getString(
+                                            sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
+                                            URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE)));
+                            refreshData();
+
+                        }
+                    })
+                    .show();
+
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -124,7 +167,10 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onRefresh() {
-                mainwebview.loadUrl(activityUrlLink.PLACE_URL);
+                mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(
+                        sharedpreferences.getString(
+                                sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
+                                URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE)));
                 refreshData();
             }
         });
@@ -147,6 +193,12 @@ public class MainActivity extends ActionBarActivity {
     private class MainActivityWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            if (!loadingFinished) {
+                redirect = true;
+            }
+            loadingFinished = false;
+
             String[] sendData = activityUrlLink.getLinkContents(url);
             if(sendData[0].trim().equalsIgnoreCase("share")){
                 shareWithAnotherApp(sendData[1].replaceAll("%20", " "));
@@ -162,11 +214,29 @@ public class MainActivity extends ActionBarActivity {
         }
 
         @Override
-        public void onPageFinished(WebView view, String url) {
-            // TODO Auto-generated method stub
-            super.onPageFinished(view, url);
-//            titlebar.setText(url);
+        public void onPageStarted(WebView view, String url, Bitmap facIcon) {
+            loadingFinished = false;
+            //SHOW LOADING IF IT ISNT ALREADY VISIBLE
         }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            if(!redirect){
+                loadingFinished = true;
+            }
+
+            if(loadingFinished && !redirect){
+                //HIDE LOADING IT HAS FINISHED
+                mainwebview.setVisibility(View.VISIBLE);
+                progressbar.setVisibility(View.GONE);
+
+            } else{
+                redirect = false;
+            }
+
+        }
+
+
 
         //        Toast.makeText(context, url, Toast.LENGTH_SHORT).show();
 

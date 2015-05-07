@@ -5,12 +5,17 @@ package extra;
  */
 public class activityUrlLink {
 
-    public static final String MAIN_LINK  = "http://192.168.43.19/graduationsurcas/appactivitesconntents/";
-    public static final String PLACE_URL = MAIN_LINK + "places.php";
+    public static final String MAIN_LINK  = "http://192.168.1.14/graduationsurcas/appactivitesconntents/";
+    public static final String PLACES_LIST_URL = MAIN_LINK + "places.php";
+    public static final String ITEMS_LIST_URL = MAIN_LINK + "itemlist.php";
 
     public static String[] getLinkContents(String link){
         link = link.substring(link.indexOf('*')+1, link.length());
        return link.split("~");
+    }
+
+    public static String getPlacesListUrl(String orderby) {
+        return PLACES_LIST_URL + "?orderby="+orderby;
     }
 
     public static String getPlaceInfoPage(String placeid) {

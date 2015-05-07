@@ -6,19 +6,19 @@
     android:orientation="vertical"
     tools:context="graduationsurcas.com.graduationapp.activites.Home">
 
-    <include
-        android:id="@+id/homeactivitytoolbar"
-        layout="@layout/toolbar" />
 
     <ScrollView
-android:background="@color/rootlayoutColor"
+        android:id="@+id/scrollviewhome"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:background="@color/rootlayoutColor">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
 
             <LinearLayout
                 android:id="@+id/homeheader"
@@ -41,9 +41,9 @@ android:background="@color/rootlayoutColor"
                 <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/card_view"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="300dp"
                     android:layout_gravity="center"
-                    android:layout_margin="4dp">
+                    card_view:cardCornerRadius="0dp">
 
                     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="fill_parent"
@@ -55,7 +55,11 @@ android:background="@color/rootlayoutColor"
                             android:layout_height="match_parent"
                             android:adjustViewBounds="true"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/exampleimage" />
+                            android:src="@drawable/weatherback" />
+
+                        <include
+                            android:id="@+id/homeactivitytoolbar"
+                            layout="@layout/toolbar" />
 
                         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                             xmlns:tools="http://schemas.android.com/tools"
@@ -71,7 +75,7 @@ android:background="@color/rootlayoutColor"
                                 android:layout_alignParentTop="true"
                                 android:layout_centerHorizontal="true"
                                 android:layout_gravity="center"
-                                android:layout_marginTop="41dp"
+                                android:layout_marginTop="83dp"
                                 android:text="00"
                                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -89,7 +93,7 @@ android:background="@color/rootlayoutColor"
                                 style="@style/Humidity"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
+                                android:layout_alignBottom="@+id/temperaturedegree"
                                 android:layout_toEndOf="@+id/temperaturedegree"
                                 android:layout_toRightOf="@+id/temperaturedegree"
                                 android:text="00%"
@@ -105,9 +109,9 @@ android:background="@color/rootlayoutColor"
 
 
             <LinearLayout
-                android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="5dp"
                 android:layout_weight="3"
                 android:orientation="vertical">
 
@@ -120,10 +124,10 @@ android:background="@color/rootlayoutColor"
                     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/homeplacecard"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="100dp"
-                        android:onClick="openplaceslist"
-                        android:layout_margin="4dp">
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        android:onClick="openplaceslist">
 
                         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                             xmlns:tools="http://schemas.android.com/tools"
@@ -132,42 +136,35 @@ android:background="@color/rootlayoutColor"
 
 
                             <TextView
+                                android:id="@+id/homeplace"
                                 style="@style/HomeCardsTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/homeplaceslist"
-                                android:id="@+id/homeplace"
                                 android:layout_alignParentBottom="true"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginBottom="31dp" />
+                                android:layout_marginBottom="31dp"
+                                android:text="@string/homeplaceslist" />
 
                             <ImageView
 
+                                android:id="@+id/imageView"
                                 style="@style/HomeCardsIcon"
-                                android:src="@drawable/placeslist"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/imageView"
                                 android:layout_above="@+id/homeplace"
-                                android:layout_centerHorizontal="true" />
+                                android:layout_centerHorizontal="true"
+                                android:src="@drawable/placeslist" />
                         </RelativeLayout>
 
                     </android.support.v7.widget.CardView>
 
                     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/card_view3"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="100dp"
-                    android:layout_margin="4dp">
-                </android.support.v7.widget.CardView>
-
-                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/homeshareareascard"
+                        android:id="@+id/homeitemscard"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="100dp"
-                        android:layout_margin="4dp">
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        android:onClick="openitemslist">
 
                         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                             xmlns:tools="http://schemas.android.com/tools"
@@ -176,30 +173,67 @@ android:background="@color/rootlayoutColor"
 
 
                             <TextView
+                                android:id="@+id/homeitemscardlabel"
                                 style="@style/HomeCardsTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/homeshareareas"
-                                android:id="@+id/homeshareareascardlabel"
                                 android:layout_alignParentBottom="true"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginBottom="31dp" />
+                                android:layout_marginBottom="31dp"
+                                android:text="@string/homeitems" />
 
                             <ImageView
 
+                                android:id="@+id/homeitemscardicon"
                                 style="@style/HomeCardsIcon"
-                                android:src="@drawable/sharearea"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_above="@+id/homeitemscardlabel"
+                                android:layout_centerHorizontal="true"
+                                android:src="@drawable/itemjar" />
+                        </RelativeLayout>
+
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/homeshareareascard"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1">
+
+                        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:tools="http://schemas.android.com/tools"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+
+
+                            <TextView
+                                android:id="@+id/homeshareareascardlabel"
+                                style="@style/HomeCardsTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="31dp"
+                                android:text="@string/homeshareareas" />
+
+                            <ImageView
+
                                 android:id="@+id/homeshareareascardicon"
+                                style="@style/HomeCardsIcon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_above="@+id/homeshareareascardlabel"
-                                android:layout_centerHorizontal="true" />
+                                android:layout_centerHorizontal="true"
+                                android:src="@drawable/sharearea" />
                         </RelativeLayout>
 
 
                     </android.support.v7.widget.CardView>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -209,45 +243,46 @@ android:background="@color/rootlayoutColor"
                     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/homeqrcard"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="100dp"
-                        android:layout_margin="4dp">
+                        android:layout_margin="4dp"
+                        android:layout_weight="1">
 
                         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                             xmlns:tools="http://schemas.android.com/tools"
                             android:layout_width="fill_parent"
-                            android:layout_height="fill_parent">
+                            android:layout_height="fill_parent"
+                            android:onClick="QRReader">
 
 
                             <TextView
+                                android:id="@+id/homeqrlabel"
                                 style="@style/HomeCardsTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/homeqr"
-                                android:id="@+id/homeqrlabel"
                                 android:layout_alignParentBottom="true"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginBottom="31dp" />
+                                android:layout_marginBottom="31dp"
+                                android:text="@string/homeqr" />
 
                             <ImageView
 
+                                android:id="@+id/homeqrcardicon"
                                 style="@style/HomeCardsIcon"
-                                android:src="@drawable/qr"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/homeqrcardicon"
                                 android:layout_above="@+id/homeqrlabel"
-                                android:layout_centerHorizontal="true" />
+                                android:layout_centerHorizontal="true"
+                                android:src="@drawable/qr" />
                         </RelativeLayout>
 
                     </android.support.v7.widget.CardView>
 
                     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/homeservicecard"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="100dp"
-                    android:layout_margin="4dp">
+                        android:id="@+id/homeservicecard"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1">
 
                         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                             xmlns:tools="http://schemas.android.com/tools"
@@ -256,31 +291,30 @@ android:background="@color/rootlayoutColor"
 
 
                             <TextView
+                                android:id="@+id/homeservicelabel"
                                 style="@style/HomeCardsTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/homeservice"
-                                android:id="@+id/homeservicelabel"
                                 android:layout_alignParentBottom="true"
                                 android:layout_centerHorizontal="true"
-                                android:layout_marginBottom="31dp" />
+                                android:layout_marginBottom="31dp"
+                                android:text="@string/homeservice" />
 
                             <ImageView
 
+                                android:id="@+id/homeserviceicon"
                                 style="@style/HomeCardsIcon"
-                                android:src="@drawable/service"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/homeserviceicon"
                                 android:layout_above="@+id/homeservicelabel"
-                                android:layout_centerHorizontal="true" />
+                                android:layout_centerHorizontal="true"
+                                android:src="@drawable/service" />
                         </RelativeLayout>
 
 
                     </android.support.v7.widget.CardView>
 
                 </LinearLayout>
-
 
 
             </LinearLayout>

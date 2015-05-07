@@ -2,6 +2,7 @@ package graduationsurcas.com.graduationapp.activites;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,10 +12,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +35,10 @@ public class placeinformation extends ActionBarActivity {
     private WebView placeinfowebview;
     private SwipeRefreshLayout swipeLayout;
 
+    boolean loadingFinished = true;
+    boolean redirect = false;
+    private LinearLayout progressbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,10 +49,12 @@ public class placeinformation extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.placeinfotoolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(placename);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.primary));
 
-
+        progressbar =  (LinearLayout)findViewById(R.id.placeprogressbar);
 
         placeinfowebview = (WebView) findViewById(R.id.placeinfowebview);
+        placeinfowebview.setVisibility(View.INVISIBLE);
         placeinfowebview.getSettings().setJavaScriptEnabled(true);
         placeinfowebview.setWebViewClient(new PlaceInfoWebViewClient());
         placeinfowebview.setWebChromeClient(new PlaceInfoWebChromeClient());
@@ -102,6 +111,11 @@ public class placeinformation extends ActionBarActivity {
     private class PlaceInfoWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (!loadingFinished) {
+                redirect = true;
+            }
+            loadingFinished = false;
+
             String[] sendData = activityUrlLink.getLinkContents(url);
             if(sendData[0].trim().equalsIgnoreCase("map")){
                 openPlaceLocationOnMap(sendData[1], sendData[2]);
@@ -110,10 +124,26 @@ public class placeinformation extends ActionBarActivity {
         }
 
         @Override
+        public void onPageStarted(WebView view, String url, Bitmap facIcon) {
+            loadingFinished = false;
+            //SHOW LOADING IF IT ISNT ALREADY VISIBLE
+        }
+
+        @Override
         public void onPageFinished(WebView view, String url) {
-            // TODO Auto-generated method stub
-            super.onPageFinished(view, url);
-//            titlebar.setText(url);
+            if(!redirect){
+                loadingFinished = true;
+            }
+
+            if(loadingFinished && !redirect){
+                //HIDE LOADING IT HAS FINISHED
+                placeinfowebview.setVisibility(View.VISIBLE);
+                progressbar.setVisibility(View.GONE);
+
+            } else{
+                redirect = false;
+            }
+
         }
 
         //        Toast.makeText(context, url, Toast.LENGTH_SHORT).show();
@@ -129,6 +159,7 @@ public class placeinformation extends ActionBarActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+
         if (keyCode == event.KEYCODE_BACK && placeinfowebview.canGoBack()) {
             placeinfowebview.goBack();
             return true;
