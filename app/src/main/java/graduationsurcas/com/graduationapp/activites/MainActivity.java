@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import extra.GeneralFunction;
+import extra.PassInfo;
 import extra.activityUrlLink;
 import extra.URLHeaderKeys;
 import extra.sharedPreferencesKey;
@@ -64,11 +66,14 @@ public class MainActivity extends ActionBarActivity {
         mainwebview.setWebViewClient(new MainActivityWebViewClient());
         mainwebview.setWebChromeClient(new MainActivityWebChromeClient());
 
-        mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(
+        mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(context,
                 sharedpreferences.getString(
                         sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
-                        URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE))
-        );
+                        URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE),
+                sharedpreferences.getInt(
+                        sharedPreferencesKey.PREFERENCES_PLACE_SELECT_AMOUNT,
+                        25)
+        ));
 
     }
 
@@ -98,14 +103,14 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == event.KEYCODE_BACK && mainwebview.canGoBack()) {
-            mainwebview.goBack();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (keyCode == event.KEYCODE_BACK && mainwebview.canGoBack()) {
+//            mainwebview.goBack();
+//            return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -136,10 +141,14 @@ public class MainActivity extends ActionBarActivity {
                                     sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
                                     text.toString().trim());
                             sharedpreferenceseditor.commit();
-                            mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(
+                            mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(context,
                                     sharedpreferences.getString(
                                             sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
-                                            URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE)));
+                                            URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE),
+                                    sharedpreferences.getInt(
+                                            sharedPreferencesKey.PREFERENCES_PLACE_SELECT_AMOUNT,
+                                            25)
+                            ));
                             refreshData();
 
                         }
@@ -167,10 +176,14 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onRefresh() {
-                mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(
+                mainwebview.loadUrl(activityUrlLink.getPlacesListUrl(context,
                         sharedpreferences.getString(
                                 sharedPreferencesKey.PREFERENCES_PLACE_ORDER_BY,
-                                URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE)));
+                                URLHeaderKeys.GET_KEY.PLACE_ORDER_PY_DATE),
+                        sharedpreferences.getInt(
+                                sharedPreferencesKey.PREFERENCES_PLACE_SELECT_AMOUNT,
+                                25)
+                ));
                 refreshData();
             }
         });
@@ -186,7 +199,7 @@ public class MainActivity extends ActionBarActivity {
                 // stop progress animation
                 swipeLayout.setRefreshing(false);
             }
-        }, 4000);
+        }, 1000);
     }
 
 
@@ -201,12 +214,11 @@ public class MainActivity extends ActionBarActivity {
 
             String[] sendData = activityUrlLink.getLinkContents(url);
             if(sendData[0].trim().equalsIgnoreCase("share")){
-                shareWithAnotherApp(sendData[1].replaceAll("%20", " "));
+                GeneralFunction.shareWithAnotherApp(sendData[1].replaceAll("%20", " "), context);
             }
             if(sendData[0].trim().equalsIgnoreCase("openplace")){
                 Intent intent = new Intent(context, placeinformation.class);
-                intent.putExtra("placeid", sendData[1]);
-                intent.putExtra("placename", sendData[2].replaceAll("%20", " "));
+                intent.putExtra("infoobject", new PassInfo(sendData[1], (sendData[2].replaceAll("%20", " "))));
                 startActivity(intent);
             }
 
@@ -249,13 +261,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void shareWithAnotherApp(String text){
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
-        sendIntent.setType("text/plain");
-        startActivity(Intent.createChooser(sendIntent,
-                getResources().getText(R.string.send_to)));
-    }
+
 
 }

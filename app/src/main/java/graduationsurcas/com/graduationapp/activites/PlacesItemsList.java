@@ -29,35 +29,36 @@ import extra.activityUrlLink;
 import extra.sharedPreferencesKey;
 import graduationsurcas.com.graduationapp.R;
 
-public class items_list extends ActionBarActivity {
-
-    private Context context = this;
+public class PlacesItemsList extends ActionBarActivity {
 
     private Toolbar toolbar;
-    private SwipeRefreshLayout swipeLayout;
     private LinearLayout progressbar;
     private WebView itemswebview;
-
-    boolean loadingFinished = true;
-    boolean redirect = false;
     private SharedPreferences sharedpreferences;
     private SharedPreferences.Editor sharedpreferenceseditor;
+    private SwipeRefreshLayout swipeLayout;
+    private Context context = this;
+    boolean loadingFinished = true;
+    boolean redirect = false;
+    private PassInfo info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_items_list);
-
+        setContentView(R.layout.activity_places_items_list);
         SharedPreferencesSetUp();
 
-        toolbar = (Toolbar) findViewById(R.id.itemslisttoolbar);
+        info = (PassInfo)getIntent().getSerializableExtra("infoobject");
+
+        toolbar = (Toolbar) findViewById(R.id.placeitemslisttoolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(info.getTitle());
         toolbar.setBackgroundColor(getResources().getColor(R.color.primary));
         initializeSwipeLayout();
 
-        progressbar =  (LinearLayout)findViewById(R.id.itemslistprogresslayout);
+        progressbar =  (LinearLayout)findViewById(R.id.placeitemslistprogresslayout);
 
-        itemswebview = (WebView) findViewById(R.id.itemslistwebview);
+        itemswebview = (WebView) findViewById(R.id.placeitemslistwebview);
         itemswebview.setVisibility(View.INVISIBLE);
         itemswebview.getSettings().setJavaScriptEnabled(true);
         itemswebview.setWebViewClient(new CustomeWebViewClient());
@@ -68,8 +69,8 @@ public class items_list extends ActionBarActivity {
                         URLHeaderKeys.GET_KEY.ITEM_ORDER_PY_DATE),
                 sharedpreferences.getInt(
                         sharedPreferencesKey.PREFERENCES_ITEM_SELECT_AMOUNT,
-                        25), -1));
-        
+                        25), Long.valueOf(info.getId())));
+
     }
 
     public void SharedPreferencesSetUp(){
@@ -78,7 +79,7 @@ public class items_list extends ActionBarActivity {
     }
 
     private void initializeSwipeLayout() {
-        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.itemslistswipe);
+        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.placeitemslistswipe);
         // Set four colors used in progress animation
         swipeLayout.setColorSchemeResources(R.color.primary,
                 R.color.primary_dark,
@@ -97,7 +98,7 @@ public class items_list extends ActionBarActivity {
                                 URLHeaderKeys.GET_KEY.ITEM_ORDER_PY_DATE),
                         sharedpreferences.getInt(
                                 sharedPreferencesKey.PREFERENCES_ITEM_SELECT_AMOUNT,
-                                25), -1));
+                                25), Long.valueOf(info.getId())));
                 refreshData();
             }
         });
@@ -114,10 +115,11 @@ public class items_list extends ActionBarActivity {
             }
         }, 4000);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_items_list, menu);
+        getMenuInflater().inflate(R.menu.menu_places_items_list, menu);
         return true;
     }
 
@@ -135,6 +137,7 @@ public class items_list extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
     private class CustomeWebViewClient extends WebViewClient {
         @Override
@@ -223,6 +226,5 @@ public class items_list extends ActionBarActivity {
             return true;
         }
     }
-
 
 }

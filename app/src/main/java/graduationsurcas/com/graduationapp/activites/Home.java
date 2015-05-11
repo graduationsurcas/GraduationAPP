@@ -52,6 +52,8 @@ import javax.xml.xpath.XPathFactory;
 
 
 import extra.GPStracker;
+import extra.GeneralFunction;
+import extra.PassInfo;
 import extra.WeatherAPIkeys;
 import extra.WeatherAPIkeys.*;
 import extra.sharedPreferencesKey;
@@ -78,6 +80,9 @@ public class Home extends ActionBarActivity {
 
         SharedPreferencesSetUp();
 
+        sharedpreferenceseditor.putString(sharedPreferencesKey.PREFERENCES_USER_LANGUAGE, GeneralFunction.getLanguageCode("Portuguese"));
+        sharedpreferenceseditor.commit();
+
         toolbar = (Toolbar) findViewById(R.id.homeactivitytoolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -89,75 +94,82 @@ public class Home extends ActionBarActivity {
         humiditydegree = (TextView) findViewById(R.id.humiditydegree);
         cityname = (TextView) findViewById(R.id.cityname);
 
-
-        //if the app run at the first time
-        //select user location
-        if(sharedpreferences.getBoolean(
-                sharedPreferencesKey.PREFERENCES_LOCATION_ASKED, true) ||
-                System.currentTimeMillis() <=
-                        (sharedpreferences.getLong(
-                                sharedPreferencesKey.PREFERENCES_LOCATION_LAST_UBDATE_TIME,
-                                System.currentTimeMillis()) + sharedpreferences.getLong(
-                                sharedPreferencesKey.PREFERENCES_LOCATION_UBDATE_PERIOD_TIME,
-                                3600000))
-                ){
-            //3600000 <-- 1H in milliseconds
-            sharedpreferenceseditor.putBoolean(sharedPreferencesKey.PREFERENCES_LOCATION_ASKED,
+        if (sharedpreferences.getBoolean(sharedPreferencesKey.PREFERENCES_APP_RUN_FIRST_TIME, true)) {
+            sharedpreferenceseditor.putBoolean(sharedPreferencesKey.PREFERENCES_APP_RUN_FIRST_TIME,
                     false);
             sharedpreferenceseditor.commit();
-            //get user location
-            getLocation();
+
+            //if the app run at the first time
+            //select user location
+            if (sharedpreferences.getBoolean(sharedPreferencesKey.PREFERENCES_LOCATION_ASKED, true)) {
+                sharedpreferenceseditor.putBoolean(sharedPreferencesKey.PREFERENCES_LOCATION_ASKED,
+                        false);
+                sharedpreferenceseditor.commit();
+
+                //get user location
+                GeneralFunction.getLocation(context);
+            }
+
+            //get weather info
+            Weather weather = new Weather(sharedpreferences.getString(
+                    sharedPreferencesKey.PREFERENCES_LOCATION_LATITUDE,
+                    ""), sharedpreferences.getString(
+                    sharedPreferencesKey.PREFERENCES_LOCATION_LONGITUDE,
+                    ""));
+            weather.execute();
+
+        }
+        //if app open before by user
+        //1 hour -> 3600000 milliseconds
+        long lastwitherupdate = Long.valueOf(sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_LAST_UBDATE_TIME,
+                String.valueOf(System.currentTimeMillis())));
+        long updatewithertime = Long.valueOf(sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_UBDATE_PERIOD_TIME,
+                "3600000"));
+
+        if ((System.currentTimeMillis() <= (lastwitherupdate + updatewithertime))) {
+            Log.d("update weather", "true");
+            //get weather
+            Weather weather = new Weather(sharedpreferences.getString(
+                    sharedPreferencesKey.PREFERENCES_LOCATION_LATITUDE,
+                    ""), sharedpreferences.getString(
+                    sharedPreferencesKey.PREFERENCES_LOCATION_LONGITUDE,
+                    ""));
+            weather.execute();
+        } else {
+            temperaturedegree.setText(
+                    sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_TEMPERATURE, "31")
+                            + (char) 0x00B0);
+            humiditydegree.setText(sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_HUMIDITY, "20%"));
+            cityname.setText(sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_PLACE, "Muscat, Oman"));
         }
 
-        Log.d("timedate", String.valueOf(System.currentTimeMillis()));
-
-
-        //get weather
-        Weather weather = new Weather(String.valueOf(locationlat),
-                String.valueOf(locationlong));
-        weather.execute();
 
 //        new DownloadImageTask().execute("oman+sur");
 
 
-//        String tempr = weather.findDetail(WeatherAPIkeys.WETHER_TEMPERATURE);
-
-
-
     }
 
-    public void SharedPreferencesSetUp(){
+    public void SharedPreferencesSetUp() {
         sharedpreferences = getSharedPreferences(sharedPreferencesKey.PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
         sharedpreferenceseditor = sharedpreferences.edit();
     }
 
 
-    public void openplaceslist(View view){
+    public void openplaceslist(View view) {
         startActivity(new Intent(context, MainActivity.class));
     }
-    public void openitemslist(View view){
+
+    public void openitemslist(View view) {
         startActivity(new Intent(context, items_list.class));
     }
 
 
-
-    public void getLocation(){
-        GPStracker gps = new GPStracker(context);
-        if(gps.isCanGetLocation()){
-            locationlat = gps.getLatitude();
-            locationlong = gps.getLongitude();
-            Log.d("location", "lat = "+locationlat+", long = "+locationlong);
-        }else {
-            gps.showSettingAlert();
-        }
-        if(locationlat == 0.0 || locationlong == 0.0){
-            locationlong = 59.47241;
-            locationlat = 22.56225;
-        }
+    public void openplacelist(View view) {
+        startActivity(new Intent(this, MainActivity.class));
     }
 
-    public void openplacelist(View view){
-        startActivity(new Intent(this, MainActivity.class));
+    public void openserviceslist(View view) {
+        startActivity(new Intent(this, ServicesList.class));
     }
 
     @Override
@@ -183,15 +195,13 @@ public class Home extends ActionBarActivity {
     }
 
 
-
     protected class Weather extends AsyncTask<Void, Void, ArrayList<String>> {
-
 
 
         private String lat;
         private String lang;
         private Document weatherdoc;
-        ArrayList<String>  weather = new ArrayList();
+        ArrayList<String> weather = new ArrayList();
         HashMap<String, String> weatherInfoList = new HashMap<>();
 
         public Weather(String lat, String lang) {
@@ -203,18 +213,18 @@ public class Home extends ActionBarActivity {
         }
 
         @Override
-        protected ArrayList<String> doInBackground(Void ...arg0) {
+        protected ArrayList<String> doInBackground(Void... arg0) {
             String qResult = "";
             HttpClient httpClient = new DefaultHttpClient();
             HttpContext localContext = new BasicHttpContext();
 
             String apiUrl = "http://api.wunderground.com/api/"
-                    +WeatherAPIkeys.WETHER_API_KEY
-                    +"/conditions/q/"
-                    +getLat()
-                    +","
-                    +getLang()
-                    +".xml";
+                    + WeatherAPIkeys.WETHER_API_KEY
+                    + "/conditions/q/"
+                    + getLat()
+                    + ","
+                    + getLang()
+                    + ".xml";
 
 
             HttpGet httpGet = new HttpGet(apiUrl);
@@ -261,6 +271,14 @@ public class Home extends ActionBarActivity {
             }
 
 
+            sharedpreferenceseditor.putString(sharedPreferencesKey.PREFERENCES_WEATHER_LAST_UBDATE_TIME, String.valueOf(System.currentTimeMillis()));
+            sharedpreferenceseditor.putString(sharedPreferencesKey.PREFERENCES_WEATHER_TEMPERATURE,
+                    findDetail(api_xml_key.WETHER_TEMPERATURE));
+            sharedpreferenceseditor.putString(sharedPreferencesKey.PREFERENCES_WEATHER_HUMIDITY,
+                    findDetail(api_xml_key.WETHER_HUMIDITY));
+            sharedpreferenceseditor.putString(sharedPreferencesKey.PREFERENCES_WEATHER_PLACE,
+                    findDetail(api_xml_key.WETHER_CITY_NAME));
+            sharedpreferenceseditor.commit();
 
             weatherInfoList.put(weather_hashmap_key.TEMPERATURE, findDetail(api_xml_key.WETHER_TEMPERATURE));
             weatherInfoList.put(weather_hashmap_key.CITYNAME, findDetail(api_xml_key.WETHER_CITY_NAME));
@@ -273,9 +291,11 @@ public class Home extends ActionBarActivity {
         protected void onPostExecute(ArrayList<String> strings) {
             super.onPostExecute(strings);
 
-            temperaturedegree.setText(weatherInfoList.get(weather_hashmap_key.TEMPERATURE) + (char) 0x00B0 );
-            humiditydegree.setText(weatherInfoList.get(weather_hashmap_key.HUMIDITY));
-            cityname.setText(weatherInfoList.get(weather_hashmap_key.CITYNAME));
+            temperaturedegree.setText(
+                    sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_TEMPERATURE, "31")
+                            + (char) 0x00B0);
+            humiditydegree.setText(sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_HUMIDITY, "20%"));
+            cityname.setText(sharedpreferences.getString(sharedPreferencesKey.PREFERENCES_WEATHER_PLACE, "Muscat, Oman"));
             //            Log.d("weather api temp", weather.get(0));
         }
 
@@ -292,7 +312,6 @@ public class Home extends ActionBarActivity {
             }
             return rs;
         }
-
 
 
         public String getLat() {
@@ -336,7 +355,6 @@ public class Home extends ActionBarActivity {
         protected Bitmap doInBackground(String... cityname) {
 
 
-
             String apiUrl = getFlickerSearchLink("oman");
             HttpClient httpClient = new DefaultHttpClient();
             HttpContext localContext = new BasicHttpContext();
@@ -369,9 +387,6 @@ public class Home extends ActionBarActivity {
             }
 
 
-
-
-
 //            String urldisplay = cityname[0];
 //            Bitmap mIcon11 = null;
 //            try {
@@ -389,13 +404,13 @@ public class Home extends ActionBarActivity {
 //            bmImage.setImageBitmap(result);
         }
 
-        public String getFlickerSearchLink(String tag){
+        public String getFlickerSearchLink(String tag) {
 //            sur+oman
             return ("https://api.flickr.com/services/rest/?" +
                     "method=flickr.photos.search" +
                     "&api_key=a59cbccd1f44d2c3cf5d5c66416ee8c3" +
-                    "&tags=uae"+
-                    "&text=uae"+
+                    "&tags=uae" +
+                    "&text=uae" +
                     "&privacy_filter=1" +
                     "&safe_search=1&per_page=1" +
                     "&page=1" +
@@ -407,7 +422,7 @@ public class Home extends ActionBarActivity {
 
     }
 
-    public void QRReader(View view){
+    public void QRReader(View view) {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setCaptureLayout(R.layout.custom_capture_layout);
         integrator.initiateScan();
@@ -416,40 +431,43 @@ public class Home extends ActionBarActivity {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        try{
+        try {
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-            if (scanResult != null ) {
-                if(scanResult.getFormatName().trim().equalsIgnoreCase("QR_CODE")){
-                    if(scanResult.getContents() != null){
+            if (scanResult != null) {
+                if (scanResult.getFormatName().trim().equalsIgnoreCase("QR_CODE")) {
+                    if (scanResult.getContents() != null) {
 
-                    String[] data = scanResult.getContents().split("~");
-                    if(data[0].trim().equalsIgnoreCase("omantourismguide")){
-                        //"omantourismguide~place~itemid~itemname"
-                        if(data[1].trim().equalsIgnoreCase("place")){
-                            try{
-                                Intent placeinfo = new Intent(context, placeinformation.class);
-                                placeinfo.putExtra("placeid", data[2]);
-                                placeinfo.putExtra("placename", data[3].replaceAll("%20", " "));
-                                startActivity(placeinfo);
-                            }catch (Exception e){
+                        String[] data = scanResult.getContents().split("~");
+                        if (data[0].trim().equalsIgnoreCase("omantourismguide")) {
+                            //"omantourismguide~place~itemid~itemname"
+                            if (data[1].trim().equalsIgnoreCase("place")) {
+                                try {
+                                    Intent placeinfo = new Intent(context, placeinformation.class);
+                                    placeinfo.putExtra("infoobject", new PassInfo(data[2], (data[3].replaceAll("%20", " "))));
+                                    startActivity(placeinfo);
+                                } catch (Exception e) {
 
+                                }
+                            } else if (data[1].trim().equalsIgnoreCase("item")) {
+                                Intent iteminfo = new Intent(context, iteminformation.class);
+                                iteminfo.putExtra("infoobject", new PassInfo(data[2], (data[3].replaceAll("%20", " "))));
+                                startActivity(iteminfo);
                             }
-                        }
 //                        String destenation = data[1];
 //                        String itemid = data[2];
 //                        String itemname = data[3];
 //                        Log.d("QR item", "destenation = "+destenation);
 //                        Log.d("QR item", "id = "+itemid);
 //                        Log.d("QR item", "name = "+itemname);
-                    }
-                    }else{
+                        }
+                    } else {
 
                     }
                 }
 //            Log.d("QR type", scanResult.getFormatName());
             }
+        } catch (Exception e) {
         }
-        catch (Exception e){}
 
 //        && scanResult.getContents() != null
     }

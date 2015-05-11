@@ -3,6 +3,7 @@
     package="graduationsurcas.com.graduationapp" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -29,6 +30,22 @@
         <activity
             android:name=".activites.items_list"
             android:label="@string/title_activity_items_list" >
+        </activity>
+        <activity
+            android:name=".activites.iteminformation"
+            android:label="@string/title_activity_iteminformation" >
+        </activity>
+        <activity
+            android:name=".activites.ServicesList"
+            android:label="@string/title_activity_services_list" >
+        </activity>
+        <activity
+            android:name=".activites.ServiceProvidor"
+            android:label="@string/title_activity_service_providor" >
+        </activity>
+        <activity
+            android:name=".activites.PlacesItemsList"
+            android:label="@string/title_activity_places_items_list" >
         </activity>
     </application>
 

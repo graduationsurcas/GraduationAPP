@@ -3,13 +3,10 @@ package graduationsurcas.com.graduationapp.activites;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,57 +15,57 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.Locale;
 
 import extra.GeneralFunction;
 import extra.PassInfo;
 import extra.activityUrlLink;
 import graduationsurcas.com.graduationapp.R;
 
-public class placeinformation extends ActionBarActivity {
+public class iteminformation extends ActionBarActivity {
 
-    private Context context = this;
+    Context context = this;
+    
+    private String itemid;
+    private String itemname;
     private Toolbar toolbar;
-    private WebView placeinfowebview;
-    private SwipeRefreshLayout swipeLayout;
+    private LinearLayout progressbar;
 
     boolean loadingFinished = true;
     boolean redirect = false;
-    private LinearLayout progressbar;
+    private WebView iteminffowebview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_placeinformation);
+        setContentView(R.layout.activity_iteminformation);
+
 
         PassInfo info = (PassInfo)getIntent().getSerializableExtra("infoobject");
 
-        toolbar = (Toolbar) findViewById(R.id.placeinfotoolbar);
+        toolbar = (Toolbar) findViewById(R.id.iteminfotoolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(info.getTitle());
         toolbar.setBackgroundColor(getResources().getColor(R.color.primary));
 
-        progressbar =  (LinearLayout)findViewById(R.id.placeprogressbar);
 
-        placeinfowebview = (WebView) findViewById(R.id.placeinfowebview);
-        placeinfowebview.setVisibility(View.INVISIBLE);
-        placeinfowebview.getSettings().setJavaScriptEnabled(true);
-        placeinfowebview.setWebViewClient(new PlaceInfoWebViewClient());
-        placeinfowebview.setWebChromeClient(new PlaceInfoWebChromeClient());
-
-        placeinfowebview.loadUrl(activityUrlLink.getPlaceInfoPage(info.getId(), context));
+        progressbar =  (LinearLayout)findViewById(R.id.iteminfoprogressbar);
 
 
+        iteminffowebview = (WebView) findViewById(R.id.iteminfowebview);
+        iteminffowebview.setVisibility(View.INVISIBLE);
+        iteminffowebview.getSettings().setJavaScriptEnabled(true);
+        iteminffowebview.setWebViewClient(new ItemInfoWebViewClient());
+        iteminffowebview.setWebChromeClient(new ItemInfoWebChromeClient());
+
+        iteminffowebview.loadUrl(activityUrlLink.getItemInfoPage(info.getId(), context));
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_placeinformation, menu);
+        getMenuInflater().inflate(R.menu.menu_iteminformation, menu);
         return true;
     }
 
@@ -87,7 +84,7 @@ public class placeinformation extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class PlaceInfoWebChromeClient extends WebChromeClient {
+    private class ItemInfoWebChromeClient extends WebChromeClient {
         public void onProgressChanged(WebView view, int progress) {
             super.onProgressChanged(view, progress);
             setProgress(progress * 100);
@@ -108,7 +105,7 @@ public class placeinformation extends ActionBarActivity {
         }
     }
 
-    private class PlaceInfoWebViewClient extends WebViewClient {
+    private class ItemInfoWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (!loadingFinished) {
@@ -117,19 +114,14 @@ public class placeinformation extends ActionBarActivity {
             loadingFinished = false;
 
             String[] sendData = activityUrlLink.getLinkContents(url);
-
-            try{
-                if(sendData[0].trim().equalsIgnoreCase("map")){
-                    GeneralFunction.openPlaceLocationOnMap(context, sendData[1], sendData[2]);
-                }else if (sendData[0].trim().equalsIgnoreCase("placeitemslist")) {
-                    Intent intent = new Intent(context, PlacesItemsList.class);
-                    intent.putExtra("infoobject", new PassInfo(sendData[1], (sendData[2].replaceAll("%20", " "))));
-                    startActivity(intent);
-                }
+            if(sendData[0].trim().equalsIgnoreCase("map")){
+                GeneralFunction.openPlaceLocationOnMap(context, sendData[1], sendData[2]);
             }
-            catch (Exception ex){}
-
-
+            else if (sendData[0].trim().equalsIgnoreCase("openplace")){
+                Intent intent = new Intent(context, placeinformation.class);
+                intent.putExtra("infoobject", new PassInfo(sendData[1], (sendData[2].replaceAll("%20", " "))));
+                startActivity(intent);
+            }
             return true;
         }
 
@@ -147,7 +139,7 @@ public class placeinformation extends ActionBarActivity {
 
             if(loadingFinished && !redirect){
                 //HIDE LOADING IT HAS FINISHED
-                placeinfowebview.setVisibility(View.VISIBLE);
+                iteminffowebview.setVisibility(View.VISIBLE);
                 progressbar.setVisibility(View.GONE);
 
             } else{
@@ -166,17 +158,5 @@ public class placeinformation extends ActionBarActivity {
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
     }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if (keyCode == event.KEYCODE_BACK && placeinfowebview.canGoBack()) {
-            placeinfowebview.goBack();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-
 
 }

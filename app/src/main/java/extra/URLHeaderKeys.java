@@ -13,5 +13,11 @@ public interface URLHeaderKeys {
         public static final String PLACE_ORDER_PY_LOCATION = "location";
         public static final String PLACE_ORDER_PY_TYPE = "type";
         public static final String PLACE_ORDER_PY_MUSR_LIKES = "mustlikes";
+        public static final String USER_LANGUAGE = "lang";
+
+        public static final String ITEM_ORDER_PY_DATE = "date";
+        public static final String ITEM_ORDER_PY_LOCATION = "location";
+        public static final String ITEM_ORDER_PY_TYPE = "type";
+
     }
 }

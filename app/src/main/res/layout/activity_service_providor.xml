@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="graduationsurcas.com.graduationapp.activites.ServiceProvidor">
+
+    <include
+        android:id="@+id/serviceprovidertoolbar"
+        layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:id="@+id/serviceproviderprogresslayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:textSize="18sp"
+            android:text="@string/load"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
+        <ProgressBar
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:id="@+id/serviceproviderprogress"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center_vertical" />
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.v4.widget.SwipeRefreshLayout
+
+            android:id="@+id/serviceproviderswipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <WebView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/serviceproviderwebview"
+                />
+
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </RelativeLayout>
+
+</LinearLayout>
