@@ -37,8 +37,18 @@
         <item name="android:width">150dp</item>
         <item name="android:height">150dp</item>
     </style>
-
-
+    <style name="signinButton">
+        <item name="android:textSize">19sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/primary</item>
+    </style>
+    <style name="signinText">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">left</item>
+        <item name="android:color">@color/primary_dark</item>
+    </style>
 
 
 </resources>

@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 public class activityUrlLink {
 
 
-    public static final String MAIN_LINK  = "http://192.168.43.19/graduationsurcas/appactivitesconntents/";
+    public static final String MAIN_LINK  = "http://192.168.1.13/graduationsurcas/appactivitesconntents/";
     public static final String PLACES_LIST_URL = MAIN_LINK + "places.php";
     public static final String ITEMS_LIST_URL = MAIN_LINK + "itemlist.php";
 

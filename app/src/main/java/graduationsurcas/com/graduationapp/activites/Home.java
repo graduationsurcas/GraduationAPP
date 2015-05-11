@@ -60,7 +60,6 @@ import extra.sharedPreferencesKey;
 import graduationsurcas.com.graduationapp.R;
 
 public class Home extends ActionBarActivity {
-
     double locationlong = 0.0;
     double locationlat = 0.0;
 
@@ -76,8 +75,8 @@ public class Home extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
 
+        setContentView(R.layout.activity_home);
         SharedPreferencesSetUp();
 
         sharedpreferenceseditor.putString(sharedPreferencesKey.PREFERENCES_USER_LANGUAGE, GeneralFunction.getLanguageCode("Portuguese"));
@@ -188,6 +187,19 @@ public class Home extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+        try{
+            startActivity(new Intent(context,Login.class));
+        }catch (Exception e){
+
+        }
+            return true;
+        } else if (id == R.id.user_login) {
+
+            try{
+                startActivity(new Intent(context, Login.class));
+            }
+            catch (Exception ex){}
+
             return true;
         }
 

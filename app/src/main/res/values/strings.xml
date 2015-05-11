@@ -28,4 +28,12 @@
     <string name="title_activity_services_list">services</string>
     <string name="title_activity_service_providor">ServiceProvidor</string>
     <string name="title_activity_places_items_list">PlacesItemsList</string>
+    <string name="user_login">Login</string>
+    <string name="title_activity_login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="singin">Sign In</string>
+    <string name="createnewaccount">Create New Account</string>
+    <string name="forgotpass">Forget Password?</string>
+    <string name="login">Login</string>
 </resources>
