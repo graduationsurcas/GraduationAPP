@@ -202,6 +202,15 @@ public class Home extends ActionBarActivity {
 
             return true;
         }
+        else if (id == R.id.user_sinup) {
+
+            try{
+                startActivity(new Intent(context, SingUp_User.class));
+            }
+            catch (Exception ex){}
+
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
