@@ -49,6 +49,11 @@
         <item name="android:gravity">left</item>
         <item name="android:color">@color/primary_dark</item>
     </style>
-
+    <style name="sissgninText">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">left</item>
+        <item name="android:color">@color/primary_dark</item>
+    </style>
 
 </resources>
