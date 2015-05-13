@@ -36,4 +36,10 @@
     <string name="createnewaccount">Create New Account</string>
     <string name="forgotpass">Forget Password?</string>
     <string name="login">Login</string>
+    <string name="service">Service Provider</string>
+    <string name="user">User</string>
+    <string name="title_activity_sing_up__user">SingUp_User</string>
+    <string name="repassword">Re-Password</string>
+    <string name="username">User Name</string>
+    <string name="singup">Sing Up</string>
 </resources>
